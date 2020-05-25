@@ -61,6 +61,15 @@ mod tests {
     use super::*;
 
     #[test]
+    fn it_works_with_a_single_segment_and_no_parameters() {
+        let pb = PathBuilder::new(&["/services/metrics/list"], JoiningSegments);
+        let s = pb.build(&[]);
+        assert!(s.is_ok());
+        let path = s.unwrap();
+        assert_eq!(path, "/services/metrics/list");
+    }
+
+    #[test]
     fn it_works_with_one_less_param_than_segments() {
         let pb = PathBuilder::new(&["/services/", "/metrics/", "/list"], JoiningSegments);
         let s = pb.build(&["123456", "abc"]);
