@@ -252,18 +252,22 @@ mod tests {
 
     #[test]
     fn it_serializes() {
-        let accounts = Accounts::from(vec![
-            Account {
-                id: 2445583035585,
-                state: "created".into(),
-                extra_fields: None,
-                monthly_billing_enabled: true,
-                monthly_charging_enabled: true,
-                credit_card_stored: false,
-                plans: None,
-                org_name: "test-nWG4mvQl_z0".into(),
-            },
-        ]);
-        println!("{}", serde_json::to_string_pretty(&accounts).unwrap());
+        let accounts = Accounts::from(vec![Account {
+            id: 2445583035585,
+            state: "created".into(),
+            extra_fields: None,
+            monthly_billing_enabled: true,
+            monthly_charging_enabled: true,
+            credit_card_stored: false,
+            plans: None,
+            org_name: "test-nWG4mvQl_z0".into(),
+        }]);
+        let result = serde_json::to_string_pretty(&accounts);
+        match result {
+            Err(ref e) => println!("Error: {:#?}", e),
+            _ => (),
+        }
+        assert!(result.is_ok());
+        println!("{}", result.unwrap());
     }
 }

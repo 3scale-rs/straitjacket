@@ -48,17 +48,21 @@ mod tests {
 
     #[test]
     fn it_serializes() {
-        let users = Users::from(vec![
-            User {
-                id: 2445583035585,
-                account_id: None,
-                state: "active".into(),
-                role: "admin".into(),
-                username: "goluser".into(),
-                email: "goluser@flawedcode.org".into(),
-                extra_fields: None
-            },
-        ]);
-        println!("{}", serde_json::to_string_pretty(&users).unwrap());
+        let users = Users::from(vec![User {
+            id: 2445583035585,
+            account_id: None,
+            state: "active".into(),
+            role: "admin".into(),
+            username: "goluser".into(),
+            email: "goluser@flawedcode.org".into(),
+            extra_fields: None,
+        }]);
+        let result = serde_json::to_string_pretty(&users);
+        match result {
+            Err(ref e) => println!("Error: {:#?}", e),
+            _ => (),
+        }
+        assert!(result.is_ok());
+        println!("{}", result.unwrap());
     }
 }

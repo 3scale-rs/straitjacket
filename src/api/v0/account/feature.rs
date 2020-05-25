@@ -65,11 +65,11 @@ mod tests {
             Feature {
                 id: 4142037,
                 name: "my_feature".into(),
-                system_name: Some(String::from( "my_feature")),
+                system_name: Some(String::from("my_feature")),
                 account_id: None,
                 scope: "account_plan".into(),
                 visible: true,
-                description: None
+                description: None,
             },
             Feature {
                 id: 4142038,
@@ -78,9 +78,15 @@ mod tests {
                 visible: false,
                 scope: "account_plan".into(),
                 account_id: None,
-                description: None
+                description: None,
             },
         ]);
-        println!("{}", serde_json::to_string_pretty(&features).unwrap());
+        let result = serde_json::to_string_pretty(&features);
+        match result {
+            Err(ref e) => println!("Error: {:#?}", e),
+            _ => (),
+        }
+        assert!(result.is_ok());
+        println!("{}", result.unwrap());
     }
 }
