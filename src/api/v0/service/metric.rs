@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use straitjacket_macro::straitjacket;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-struct Metadata;
+pub struct Metadata;
 
 #[straitjacket]
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]

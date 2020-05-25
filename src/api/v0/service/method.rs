@@ -2,12 +2,12 @@ use serde::{Deserialize, Serialize};
 use straitjacket_macro::straitjacket;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-struct Metadata;
+pub struct Metadata;
 
 #[straitjacket]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 // A service method
-struct Method {
+pub struct Method {
     id: String,
     name: String,
     system_name: String,
