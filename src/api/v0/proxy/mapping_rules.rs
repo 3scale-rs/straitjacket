@@ -15,7 +15,7 @@ pub struct MappingRule {
     last: bool,
 }
 
-endpoint! { EPK, GET joining [ "/products/", "/properties" ] returning MappingRules }
+endpoint! { EPK, GET joining [ "/admin/api/services/", "/proxy/mapping_rules.json" ] returning MappingRules }
 endpoint_test! { it_parses2, EPK, r##"{
 "mapping_rules": [
   {

@@ -126,7 +126,7 @@ macro_rules! endpoint {
 mod test {
     use super::*;
 
-    endpoint! { EPK, GET joining [ "/products/", "/properties" ] returning crate::proxy::mapping_rules::MappingRules }
+    endpoint! { EPK, GET joining [ "/admin/services/", "/proxy/mapping_rules.json" ] returning crate::api::v0::proxy::mapping_rules::MappingRules }
     endpoint_test! { it_parses2, EPK, r##"{
   "mapping_rules": [
     {
@@ -188,7 +188,7 @@ mod test {
 
     #[test]
     fn it_creates_a_path_by_joining_args() {
-        let ep = Endpoint::<'_, '_, crate::proxy::mapping_rules::MappingRules>::new(
+        let ep = Endpoint::<'_, '_, crate::api::v0::proxy::mapping_rules::MappingRules>::new(
             Method::GET,
             &["/products/", "/properties"],
             ParameterQuantifier::JoiningSegments,
@@ -200,7 +200,7 @@ mod test {
 
     #[test]
     fn it_creates_a_path_by_joining_args_plus_a_final_arg() {
-        let ep = Endpoint::<'_, '_, crate::proxy::mapping_rules::MappingRules>::new(
+        let ep = Endpoint::<'_, '_, crate::api::v0::proxy::mapping_rules::MappingRules>::new(
             Method::GET,
             &["/category/", "/properties/"],
             ParameterQuantifier::PairingSegments,
@@ -212,7 +212,7 @@ mod test {
 
     #[test]
     fn it_parses() {
-        let ep = Endpoint::<'_, '_, crate::proxy::mapping_rules::MappingRules>::new(
+        let ep = Endpoint::<'_, '_, crate::api::v0::proxy::mapping_rules::MappingRules>::new(
             Method::GET,
             &["/category/", "/properties/"],
             ParameterQuantifier::PairingSegments,
