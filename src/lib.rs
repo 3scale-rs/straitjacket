@@ -13,7 +13,6 @@ pub mod resources;
 pub mod api;
 
 pub mod client;
-pub mod proxy;
 pub mod service;
 
 #[cfg(test)]
