@@ -89,6 +89,12 @@ mod tests {
                 trust_email: false
             },
         ]);
-        println!("{}", serde_json::to_string_pretty(&ap).unwrap());
+        let result = serde_json::to_string_pretty(&ap);
+        match result {
+            Err(ref e) => println!("Error: {:#?}", e),
+            _ => (),
+        }
+        assert!(result.is_ok());
+        println!("{}", result.unwrap());
     }
 }

@@ -62,15 +62,19 @@ mod tests {
 
     #[test]
     fn it_serializes() {
-        let limits = Limits::from(vec![
-            Limit {
-                id: 2639696107074,
-                metric_id: 2555418191879,
-                plan_id: 2357356012630,
-                period: Period::Day,
-                value: 5,
-            },
-        ]);
-        println!("{}", serde_json::to_string_pretty(&limits).unwrap());
+        let limits = Limits::from(vec![Limit {
+            id: 2639696107074,
+            metric_id: 2555418191879,
+            plan_id: 2357356012630,
+            period: Period::Day,
+            value: 5,
+        }]);
+        let result = serde_json::to_string_pretty(&limits);
+        match result {
+            Err(ref e) => println!("Error: {:#?}", e),
+            _ => (),
+        }
+        assert!(result.is_ok());
+        println!("{}", result.unwrap());
     }
 }

@@ -69,6 +69,10 @@ macro_rules! endpoint_test {
         fn $name() {
             let response = $response;
             let object = $endpoint.parse_str(&response);
+            match object {
+              Err(ref e) => println!("Error: {:#?}", e),
+              _ => (),
+            }
             assert!(object.is_ok());
             let object = object.unwrap();
             println!("PARSED:\n{:#?}", object);

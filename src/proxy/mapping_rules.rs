@@ -101,6 +101,12 @@ mod tests {
                 last: false,
             },
         ]);
-        println!("{}", serde_json::to_string_pretty(&mapping_rules).unwrap());
+        let result = serde_json::to_string_pretty(&mapping_rules);
+        match result {
+            Err(ref e) => println!("Error: {:#?}", e),
+            _ => (),
+        }
+        assert!(result.is_ok());
+        println!("{}", result.unwrap());
     }
 }

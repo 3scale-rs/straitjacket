@@ -39,16 +39,20 @@ mod tests {
 
     #[test]
     fn it_serializes() {
-        let docs = ApiDocs::from(vec![
-            ApiDoc {
-                id: 2639696107074,
-                system_name: "echo".into(),
-                name: "Echo".into(),
-                published: true,
-                skip_swagger_validations: false,
-                body: "{}".into()
-            },
-        ]);
-        println!("{}", serde_json::to_string_pretty(&docs).unwrap());
+        let docs = ApiDocs::from(vec![ApiDoc {
+            id: 2639696107074,
+            system_name: "echo".into(),
+            name: "Echo".into(),
+            published: true,
+            skip_swagger_validations: false,
+            body: "{}".into(),
+        }]);
+        let result = serde_json::to_string_pretty(&docs);
+        match result {
+            Err(ref e) => println!("Error: {:#?}", e),
+            _ => (),
+        }
+        assert!(result.is_ok());
+        println!("{}", result.unwrap());
     }
 }
