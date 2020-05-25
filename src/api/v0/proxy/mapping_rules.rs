@@ -15,69 +15,70 @@ pub struct MappingRule {
     last: bool,
 }
 
-endpoint! { EPK, GET joining [ "/admin/api/services/", "/proxy/mapping_rules.json" ] returning MappingRules }
-endpoint_test! { it_parses2, EPK, r##"{
-"mapping_rules": [
-  {
-    "mapping_rule": {
-      "id": 375841,
-      "metric_id": 2555418191879,
-      "pattern": "/",
-      "http_method": "GET",
-      "delta": 1,
-      "position": 1,
-      "last": false,
-      "created_at": "2019-03-19T09:04:35Z",
-      "updated_at": "2019-03-19T09:04:39Z",
-      "links": [
-        {
-          "rel": "self",
-          "href": "/admin/api/services/2555417777820/proxy/mapping_rules/375841"
-        },
-        {
-          "rel": "service",
-          "href": "/admin/api/services/2555417777820"
-        },
-        {
-          "rel": "proxy",
-          "href": "/admin/api/services/2555417777820/proxy"
-        }
-      ]
-    }
-  },
-  {
-    "mapping_rule": {
-      "id": 375842,
-      "metric_id": 2555418191880,
-      "pattern": "/",
-      "http_method": "POST",
-      "delta": 1,
-      "position": 2,
-      "last": false,
-      "created_at": "2019-03-19T09:04:36Z",
-      "updated_at": "2019-03-19T09:04:39Z",
-      "links": [
-        {
-          "rel": "self",
-          "href": "/admin/api/services/2555417777820/proxy/mapping_rules/375842"
-        },
-        {
-          "rel": "service",
-          "href": "/admin/api/services/2555417777820"
-        },
-        {
-          "rel": "proxy",
-          "href": "/admin/api/services/2555417777820/proxy"
-        }
-      ]
-    }
-  }
-]
-}"## }
+endpoint! { LIST, GET joining [ "/admin/api/services/", "/proxy/mapping_rules.json" ] returning MappingRules }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    endpoint_test! { it_parses, LIST, r##"{
+    "mapping_rules": [
+      {
+        "mapping_rule": {
+          "id": 375841,
+          "metric_id": 2555418191879,
+          "pattern": "/",
+          "http_method": "GET",
+          "delta": 1,
+          "position": 1,
+          "last": false,
+          "created_at": "2019-03-19T09:04:35Z",
+          "updated_at": "2019-03-19T09:04:39Z",
+          "links": [
+            {
+              "rel": "self",
+              "href": "/admin/api/services/2555417777820/proxy/mapping_rules/375841"
+            },
+            {
+              "rel": "service",
+              "href": "/admin/api/services/2555417777820"
+            },
+            {
+              "rel": "proxy",
+              "href": "/admin/api/services/2555417777820/proxy"
+            }
+          ]
+        }
+      },
+      {
+        "mapping_rule": {
+          "id": 375842,
+          "metric_id": 2555418191880,
+          "pattern": "/",
+          "http_method": "POST",
+          "delta": 1,
+          "position": 2,
+          "last": false,
+          "created_at": "2019-03-19T09:04:36Z",
+          "updated_at": "2019-03-19T09:04:39Z",
+          "links": [
+            {
+              "rel": "self",
+              "href": "/admin/api/services/2555417777820/proxy/mapping_rules/375842"
+            },
+            {
+              "rel": "service",
+              "href": "/admin/api/services/2555417777820"
+            },
+            {
+              "rel": "proxy",
+              "href": "/admin/api/services/2555417777820/proxy"
+            }
+          ]
+        }
+      }
+    ]
+    }"## }
 
     #[test]
     fn it_serializes() {
