@@ -64,11 +64,14 @@ impl<'a, 's, 'de, M: Deserialize<'de>> Endpoint<'a, 's, M> {
 
 macro_rules! endpoint_test {
     { $name:ident, $endpoint:path, $response:expr } => {
+
+        #[cfg(test)]
+        const RESPONSE: &'static str = $response;
+
         #[cfg(test)]
         #[test]
         fn $name() {
-            let response = $response;
-            let object = $endpoint.parse_str(&response);
+            let object = $endpoint.parse_str(RESPONSE);
             match object {
               Err(ref e) => println!("Error: {:#?}", e),
               _ => (),
@@ -217,65 +220,7 @@ mod test {
             &["/category/", "/properties/"],
             ParameterQuantifier::PairingSegments,
         );
-        let response = r##"{
-  "mapping_rules": [
-    {
-      "mapping_rule": {
-        "id": 375841,
-        "metric_id": 2555418191879,
-        "pattern": "/",
-        "http_method": "GET",
-        "delta": 1,
-        "position": 1,
-        "last": false,
-        "created_at": "2019-03-19T09:04:35Z",
-        "updated_at": "2019-03-19T09:04:39Z",
-        "links": [
-          {
-            "rel": "self",
-            "href": "/admin/api/services/2555417777820/proxy/mapping_rules/375841"
-          },
-          {
-            "rel": "service",
-            "href": "/admin/api/services/2555417777820"
-          },
-          {
-            "rel": "proxy",
-            "href": "/admin/api/services/2555417777820/proxy"
-          }
-        ]
-      }
-    },
-    {
-      "mapping_rule": {
-        "id": 375842,
-        "metric_id": 2555418191880,
-        "pattern": "/",
-        "http_method": "POST",
-        "delta": 1,
-        "position": 2,
-        "last": false,
-        "created_at": "2019-03-19T09:04:36Z",
-        "updated_at": "2019-03-19T09:04:39Z",
-        "links": [
-          {
-            "rel": "self",
-            "href": "/admin/api/services/2555417777820/proxy/mapping_rules/375842"
-          },
-          {
-            "rel": "service",
-            "href": "/admin/api/services/2555417777820"
-          },
-          {
-            "rel": "proxy",
-            "href": "/admin/api/services/2555417777820/proxy"
-          }
-        ]
-      }
-    }
-  ]
-}"##;
-        let object = ep.parse_str(&response);
+        let object = ep.parse_str(RESPONSE);
         assert!(object.is_ok());
         let object = object.unwrap();
         println!("PARSED:\n{:#?}", object);
