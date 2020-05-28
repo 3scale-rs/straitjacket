@@ -1,5 +1,5 @@
 #[macro_use]
 pub mod http;
-mod metadata;
+pub mod metadata;
 
 pub use metadata::Metadata;
