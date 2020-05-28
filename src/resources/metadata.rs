@@ -29,7 +29,13 @@ impl Link {
     pub fn href(&self) -> &str {
         self.href.as_str()
     }
+
+    pub fn url(&self) -> Result<crate::deps::url::Url, Box<dyn std::error::Error>> {
+        let url = crate::deps::url::Url::parse(self.href())?;
+        Ok(url)
+    }
 }
+
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct Metadata {
     created_at: String,
@@ -48,6 +54,16 @@ impl Metadata {
 
     pub fn links(&self) -> Option<&[Link]> {
         self.links.as_ref().map(std::vec::Vec::as_slice)
+    }
+
+    pub fn find_link(&self, rel: &str) -> Option<&Link> {
+        self.links()?.iter().find(|link| link.rel() == rel)?.into()
+    }
+
+    pub fn find_url(&self, rel: &str) -> Result<crate::deps::url::Url, Box<dyn std::error::Error>> {
+        self.find_link(rel)
+            .ok_or(format!("no {} link present", rel))?
+            .url()
     }
 }
 
