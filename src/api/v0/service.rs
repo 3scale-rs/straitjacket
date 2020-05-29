@@ -24,9 +24,13 @@ pub enum AuthenticationMode {
     OIDC,
 }
 
-type Metadata = crate::resources::Metadata;
+// Work around embedding Metadata into Service.
+// See straitjacket_macro#1.
+#[doc(hidden)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct EmptyMetadata;
 
-#[straitjacket]
+#[straitjacket(metadata = "EmptyMetadata")]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Service {
     id: u64,
@@ -49,6 +53,26 @@ pub struct Service {
     deployment_option: Option<DeploymentOption>,
     support_email: Option<String>,
     metrics: Option<Vec<metric::Metric>>,
+    #[serde(flatten)]
+    metadata: Option<crate::resources::Metadata>,
+}
+
+impl Service {
+    pub fn metadata(&self) -> Option<&crate::resources::Metadata> {
+        self.metadata.as_ref()
+    }
+
+    pub fn metrics(&self) -> Result<crate::deps::url::Url, Box<dyn std::error::Error>> {
+        self.metadata()
+            .ok_or("no metadata present")?
+            .find_url("metrics")
+    }
+
+    pub fn application_plans(&self) -> Result<crate::deps::url::Url, Box<dyn std::error::Error>> {
+        self.metadata()
+            .ok_or("no metadata present")?
+            .find_url("application_plans")
+    }
 }
 
 endpoint!(LIST, GET joining [ "/admin/api/services.json"] returning Services);
@@ -345,4 +369,28 @@ mod test {
       }
     ]
   }"## }
+
+    // helper fn
+    fn parse_services() -> Vec<Service> {
+        let services = LIST.parse_str(RESPONSE);
+        assert!(services.is_ok());
+        services.unwrap().into()
+    }
+
+    #[test]
+    fn it_has_all_services_with_metadata() {
+        assert!(parse_services().iter().all(|svc| svc.metadata.is_some()));
+    }
+
+    #[test]
+    fn it_has_all_services_with_a_metrics_link() {
+        assert!(parse_services().iter().all(|svc| svc.metrics().is_ok()));
+    }
+
+    #[test]
+    fn it_has_all_services_with_an_application_plans_link() {
+        assert!(parse_services()
+            .iter()
+            .all(|svc| svc.application_plans().is_ok()));
+    }
 }
