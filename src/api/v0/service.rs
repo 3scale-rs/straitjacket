@@ -53,7 +53,7 @@ pub struct Service {
     deployment_option: Option<DeploymentOption>,
     support_email: Option<String>,
     metrics: Option<Vec<metric::Metric>>,
-    #[serde(flatten)]
+    #[serde(flatten, skip_serializing)]
     metadata: Option<crate::resources::Metadata>,
 }
 
