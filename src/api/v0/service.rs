@@ -5,7 +5,7 @@ pub mod method;
 pub mod metric;
 pub mod plan;
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum DeploymentOption {
     Hosted,
@@ -14,7 +14,7 @@ pub enum DeploymentOption {
     PluginRest,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize)]
 pub enum AuthenticationMode {
     #[serde(rename = "1")]
     APIKey,
@@ -58,6 +58,26 @@ pub struct Service {
 }
 
 impl Service {
+    pub fn id(&self) -> u64 {
+        self.id
+    }
+
+    pub fn system_name(&self) -> &str {
+        self.system_name.as_str()
+    }
+
+    pub fn description(&self) -> &str {
+        self.description.as_str()
+    }
+
+    pub fn authentication_mode(&self) -> AuthenticationMode {
+        self.backend_version
+    }
+
+    pub fn deployment_option(&self) -> Option<DeploymentOption> {
+        self.deployment_option
+    }
+
     pub fn metadata(&self) -> Option<&crate::resources::Metadata> {
         self.metadata.as_ref()
     }
@@ -72,6 +92,20 @@ impl Service {
         self.metadata()
             .ok_or("no metadata present")?
             .find_url("application_plans")
+    }
+}
+
+impl std::fmt::Display for Service {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{id} {system_name} {authentication_mode:#?} {deployment_option:?} {description}",
+            id = self.id(),
+            system_name = self.system_name(),
+            authentication_mode = self.authentication_mode(),
+            deployment_option = self.deployment_option(),
+            description = self.description()
+        )
     }
 }
 
