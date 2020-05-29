@@ -116,4 +116,66 @@ mod tests {
             assert!(links.iter().all(|l| !l.href().ends_with(".json.json")));
         }
     }
+
+    mod metadata {
+        use super::*;
+
+        const FIXTURE: &'static str = r#"{
+            "created_at": "2020-05-11T13:55:00+01:00",
+            "updated_at": "2020-05-11T13:55:00+01:00",
+            "links": [
+                {
+                "rel": "service",
+                "href": "https://istiodevel-admin.3scale.net/admin/api/services/2555417783508"
+                },
+                {
+                "rel": "self",
+                "href": "https://istiodevel-admin.3scale.net/admin/api/services/2555417783508/metrics/2555418218054.json"
+                }
+            ]
+        }"#;
+
+        fn parse_metadata(s: &str) -> Result<Metadata, serde_json::Error> {
+            serde_json::from_str::<Metadata>(s)
+        }
+
+        #[test]
+        fn it_parses_metadata() {
+            let metadata = parse_metadata(FIXTURE);
+            match &metadata {
+                Err(e) => println!("Error parsing metadata {:#?}", e),
+                _ => (),
+            }
+            assert!(metadata.is_ok());
+        }
+
+        #[test]
+        fn it_finds_the_service_link() {
+            let metadata = parse_metadata(FIXTURE).expect("can't parse properly");
+            assert!(metadata.find_link("service").is_some());
+        }
+
+        #[test]
+        fn it_finds_the_self_link() {
+            let metadata = parse_metadata(FIXTURE).expect("can't parse properly");
+            assert!(metadata.find_link("self").is_some());
+        }
+
+        #[test]
+        fn it_fails_to_find_a_non_existing_link() {
+            let metadata = parse_metadata(FIXTURE).expect("can't parse properly");
+            assert!(metadata.find_link("non_existing").is_none());
+        }
+
+        #[test]
+        fn it_converts_a_link_to_a_url() {
+            let metadata = parse_metadata(FIXTURE).expect("can't parse properly");
+            let url = metadata.find_url("service");
+            match &url {
+                Err(e) => println!("Error converting a link to a URL {:#?}", e),
+                _ => (),
+            }
+            assert!(url.is_ok());
+        }
+    }
 }
