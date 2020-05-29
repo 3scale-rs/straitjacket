@@ -104,11 +104,27 @@ impl Client {
         self.host_url().ok_or_else(|| From::from("no url"))
     }
 
+    pub fn endpoint_request_builder<T, Q, B>(
+        &self,
+        ep: &crate::resources::http::endpoint::Endpoint<'_, '_, T>,
+        args: &[&str],
+        query_string: Option<&Q>,
+        body: Option<&B>,
+    ) -> Result<RequestBuilder, Box<dyn Error>>
+    where
+        Q: Serialize + ?Sized,
+        B: Serialize + ?Sized,
+    {
+        let path = ep.path(args)?;
+        // unfortunately request generation needs ownership of http::Method, so need to clone
+        self.request_builder(ep.method().clone(), path.as_str(), query_string, body)
+    }
+
     pub fn request_builder<Q, B>(
         &self,
         method: Method,
         path: &str,
-        query: Option<&Q>,
+        query_string: Option<&Q>,
         body: Option<&B>,
     ) -> Result<RequestBuilder, Box<dyn Error>>
     where
@@ -136,14 +152,29 @@ impl Client {
         if let Some(ref token) = self.token {
             rb = rb.query(&[("access_token", token.as_str())]);
         }
-        if let Some(query) = query {
-            rb = rb.query(query);
+        if let Some(qs) = query_string {
+            rb = rb.query(qs);
         }
         if let Some(body) = body {
             rb = rb.json(body);
         }
 
         Ok(rb)
+    }
+
+    pub fn endpoint_request<T, Q, B>(
+        &self,
+        ep: &crate::resources::http::endpoint::Endpoint<'_, '_, T>,
+        args: &[&str],
+        query_string: Option<&Q>,
+        body: Option<&B>,
+    ) -> Result<Request, Box<dyn Error>>
+    where
+        Q: Serialize + ?Sized,
+        B: Serialize + ?Sized,
+    {
+        let rb = self.endpoint_request_builder(ep, args, query_string, body)?;
+        rb.build().map_err(|e| Box::new(e) as Box<dyn Error>)
     }
 
     pub fn request<Q, B>(
@@ -164,6 +195,22 @@ impl Client {
     pub fn send_request(&self, request: Request) -> Result<Response, Box<dyn Error>> {
         self.client
             .execute(request)
+            .map_err(|e| Box::new(e) as Box<dyn Error>)
+    }
+
+    pub fn send_endpoint<T, Q, B>(
+        &self,
+        ep: &crate::resources::http::endpoint::Endpoint<'_, '_, T>,
+        args: &[&str],
+        query_string: Option<&Q>,
+        body: Option<&B>,
+    ) -> Result<Response, Box<dyn Error>>
+    where
+        Q: Serialize + ?Sized,
+        B: Serialize + ?Sized,
+    {
+        self.endpoint_request_builder(ep, args, query_string, body)?
+            .send()
             .map_err(|e| Box::new(e) as Box<dyn Error>)
     }
 
@@ -228,5 +275,41 @@ mod tests {
             None::<&str>,
         );
         assert!(r.is_ok());
+    }
+
+    #[test]
+    fn it_returns_a_request_builder_with_endpoint_types() {
+        let c = setup_client(10);
+        let endpoint = &crate::api::v0::service::LIST;
+        let rb = c.endpoint_request_builder(endpoint, &[], None::<&str>, None::<&str>);
+        match &rb {
+            Err(e) => println!("Error generating RequestBuilder {:#?}", e),
+            _ => (),
+        }
+        assert!(rb.is_ok());
+    }
+
+    #[test]
+    fn it_returns_a_request_with_endpoint_types() {
+        let c = setup_client(10);
+        let endpoint = &crate::api::v0::service::LIST;
+        let req = c.endpoint_request(endpoint, &[], None::<&str>, None::<&str>);
+        match &req {
+            Err(e) => println!("Error generating RequestBuilder {:#?}", e),
+            _ => (),
+        }
+        assert!(req.is_ok());
+    }
+
+    #[test]
+    fn it_gets_a_response_when_using_an_endpoint() {
+        let c = setup_client(10);
+        let endpoint = &crate::api::v0::service::LIST;
+        let resp = c.send_endpoint(endpoint, &[], None::<&str>, None::<&str>);
+        assert!(resp.is_ok());
+        let resp = resp.unwrap();
+        let text = resp.text();
+        assert!(text.is_ok());
+        assert!(endpoint.parse_str(text.unwrap().as_str()).is_ok());
     }
 }
