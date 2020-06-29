@@ -130,7 +130,7 @@ mod test {
     use super::*;
 
     endpoint! { EPK, GET joining [ "/admin/services/", "/proxy/mapping_rules.json" ] returning crate::api::v0::service::proxy::mapping_rules::MappingRules }
-    endpoint_test! { it_parses2, EPK, r##"{
+    endpoint_test! { it_parses, EPK, r##"{
   "mapping_rules": [
     {
       "mapping_rule": {
@@ -213,19 +213,5 @@ mod test {
         let args = vec!["products", "id123"];
         let path = ep.path(&args).unwrap();
         assert_eq!(path, "/category/products/properties/id123");
-    }
-
-    #[test]
-    fn it_parses() {
-        let ep =
-            Endpoint::<'_, '_, crate::api::v0::service::proxy::mapping_rules::MappingRules>::new(
-                Method::GET,
-                &["/category/", "/properties/"],
-                ParameterQuantifier::PairingSegments,
-            );
-        let object = ep.parse_str(RESPONSE);
-        assert!(object.is_ok());
-        let object = object.unwrap();
-        println!("PARSED:\n{:#?}", object);
     }
 }
