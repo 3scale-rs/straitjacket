@@ -129,8 +129,8 @@ macro_rules! endpoint {
 mod test {
     use super::*;
 
-    endpoint! { EPK, GET joining [ "/admin/services/", "/proxy/mapping_rules.json" ] returning crate::api::v0::proxy::mapping_rules::MappingRules }
-    endpoint_test! { it_parses2, EPK, r##"{
+    endpoint! { EPK, GET joining [ "/admin/services/", "/proxy/mapping_rules.json" ] returning crate::api::v0::service::proxy::mapping_rules::MappingRules }
+    endpoint_test! { it_parses, EPK, r##"{
   "mapping_rules": [
     {
       "mapping_rule": {
@@ -191,11 +191,12 @@ mod test {
 
     #[test]
     fn it_creates_a_path_by_joining_args() {
-        let ep = Endpoint::<'_, '_, crate::api::v0::proxy::mapping_rules::MappingRules>::new(
-            Method::GET,
-            &["/products/", "/properties"],
-            ParameterQuantifier::JoiningSegments,
-        );
+        let ep =
+            Endpoint::<'_, '_, crate::api::v0::service::proxy::mapping_rules::MappingRules>::new(
+                Method::GET,
+                &["/products/", "/properties"],
+                ParameterQuantifier::JoiningSegments,
+            );
         let args = vec!["id123"];
         let path = ep.path(&args).unwrap();
         assert_eq!(path, "/products/id123/properties");
@@ -203,26 +204,14 @@ mod test {
 
     #[test]
     fn it_creates_a_path_by_joining_args_plus_a_final_arg() {
-        let ep = Endpoint::<'_, '_, crate::api::v0::proxy::mapping_rules::MappingRules>::new(
-            Method::GET,
-            &["/category/", "/properties/"],
-            ParameterQuantifier::PairingSegments,
-        );
+        let ep =
+            Endpoint::<'_, '_, crate::api::v0::service::proxy::mapping_rules::MappingRules>::new(
+                Method::GET,
+                &["/category/", "/properties/"],
+                ParameterQuantifier::PairingSegments,
+            );
         let args = vec!["products", "id123"];
         let path = ep.path(&args).unwrap();
         assert_eq!(path, "/category/products/properties/id123");
-    }
-
-    #[test]
-    fn it_parses() {
-        let ep = Endpoint::<'_, '_, crate::api::v0::proxy::mapping_rules::MappingRules>::new(
-            Method::GET,
-            &["/category/", "/properties/"],
-            ParameterQuantifier::PairingSegments,
-        );
-        let object = ep.parse_str(RESPONSE);
-        assert!(object.is_ok());
-        let object = object.unwrap();
-        println!("PARSED:\n{:#?}", object);
     }
 }
