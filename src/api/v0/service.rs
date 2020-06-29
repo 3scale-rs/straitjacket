@@ -4,6 +4,7 @@ use straitjacket_macro::straitjacket;
 pub mod method;
 pub mod metric;
 pub mod plan;
+pub mod proxy;
 
 #[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
