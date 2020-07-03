@@ -45,9 +45,19 @@ pub struct LogoFile {
     #[serde(rename = "logo_file_name")]
     name: String,
     #[serde(rename = "logo_content_type")]
-    content_type: String,
+    content_type: Option<String>,
     #[serde(rename = "logo_file_size")]
-    file_size: u64,
+    file_size: Option<u64>,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct DefaultPlans {
+    #[serde(rename = "default_application_plan_id")]
+    application_plan_id: Option<u64>,
+    #[serde(rename = "default_service_plan_id")]
+    service_plan_id: Option<u64>,
+    #[serde(rename = "default_end_user_plan_id")]
+    end_user_plan_id: Option<u64>,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -62,9 +72,20 @@ pub struct SupportEmails {
     credit_card: Option<String>,
 }
 
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct BuyerSettings {
+    buyers_manage_apps: bool,
+    buyers_manage_keys: bool,
+    buyer_plan_change_permission: String,
+    buyer_can_select_plan: bool,
+    buyer_key_regenerate_enabled: bool,
+}
+
 #[straitjacket]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Content {
+    id: u64,
+    account_id: u64,
     name: String,
     oneline_description: Option<String>,
     description: Option<String>,
@@ -85,33 +106,29 @@ pub struct Content {
     intentions_required: bool,
     draft_name: String,
     display_provider_keys: bool,
-    buyers_manage_apps: bool,
-    buyers_manage_keys: bool,
     custom_keys_enabled: bool,
-    buyer_plan_change_permission: String,
-    buyer_can_select_plan: bool,
-    default_application_plan_id: u64,
-    default_service_plan_id: Option<u64>,
-    default_end_user_plan_id: Option<u64>,
+    #[serde(flatten)]
+    buyer_settings: BuyerSettings,
+    #[serde(flatten)]
+    default_plans: DefaultPlans,
     end_user_registration_required: bool,
     tenant_id: u64,
     system_name: String,
     backend_version: AuthenticationMode,
     mandatory_app_key: bool,
-    buyer_key_regenerate_enabled: bool,
     referrer_filters_required: bool,
     deployment_option: DeploymentOption,
     #[serde(rename = "proxiable?")]
     proxiable: bool,
+    #[serde(flatten)]
     backend_authentication_type: BackendAuthentication,
     //proxy: super::Proxy,
 }
 
-#[straitjacket(name = "ProxyConfig")]
+#[straitjacket(name_snake = "proxy_config", plural_snake = "proxy_configs")]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Config {
     id: u64,
-    account_id: u64,
     version: u64,
     environment: Environment,
     content: Content,
@@ -545,10 +562,11 @@ mod tests {
         let configs = Configs::from(vec![
             Config {
                 id: 375841,
-                account_id: 2555418191879,
                 version: 1,
                 environment: Environment::Production,
                 content: Content {
+                    id: 2555417777820,
+                    account_id: 2555418191879,
                     description: Some("a config description".into()),
                     oneline_description: None,
                     logo_file: None,
@@ -557,20 +575,24 @@ mod tests {
                     state: "unknown".into(),
                     draft_name: "draft".into(),
                     intentions_required: false,
-                    buyer_can_select_plan: true,
-                    buyer_key_regenerate_enabled: true,
-                    buyer_plan_change_permission: "all".into(),
-                    buyers_manage_apps: true,
-                    buyers_manage_keys: true,
+                    buyer_settings: BuyerSettings {
+                        buyer_can_select_plan: true,
+                        buyer_key_regenerate_enabled: true,
+                        buyer_plan_change_permission: "all".into(),
+                        buyers_manage_apps: true,
+                        buyers_manage_keys: true,
+                    },
                     backend_authentication_type: BackendAuthentication::ProviderKey(
                         "aproviderkey".into(),
                     ),
                     end_user_registration_required: false,
                     backend_version: AuthenticationMode::AppIdKey,
                     custom_keys_enabled: false,
-                    default_application_plan_id: 1234,
-                    default_end_user_plan_id: None,
-                    default_service_plan_id: None,
+                    default_plans: DefaultPlans {
+                        application_plan_id: 1234.into(),
+                        end_user_plan_id: None,
+                        service_plan_id: None,
+                    },
                     tenant_id: 101010,
                     deployment_option: DeploymentOption::SelfManaged,
                     display_provider_keys: true,
@@ -582,10 +604,11 @@ mod tests {
             },
             Config {
                 id: 375841,
-                account_id: 2555418191879,
                 version: 2,
                 environment: Environment::Production,
                 content: Content {
+                    id: 2555417777821,
+                    account_id: 2555418191879,
                     description: Some("a config description".into()),
                     oneline_description: None,
                     logo_file: None,
@@ -594,20 +617,24 @@ mod tests {
                     state: "unknown".into(),
                     draft_name: "draft".into(),
                     intentions_required: false,
-                    buyer_can_select_plan: true,
-                    buyer_key_regenerate_enabled: true,
-                    buyer_plan_change_permission: "all".into(),
-                    buyers_manage_apps: true,
-                    buyers_manage_keys: true,
+                    buyer_settings: BuyerSettings {
+                        buyer_can_select_plan: true,
+                        buyer_key_regenerate_enabled: true,
+                        buyer_plan_change_permission: "all".into(),
+                        buyers_manage_apps: true,
+                        buyers_manage_keys: true,
+                    },
                     backend_authentication_type: BackendAuthentication::ProviderKey(
                         "aproviderkey".into(),
                     ),
                     end_user_registration_required: false,
                     backend_version: AuthenticationMode::AppIdKey,
                     custom_keys_enabled: false,
-                    default_application_plan_id: 1234,
-                    default_end_user_plan_id: None,
-                    default_service_plan_id: None,
+                    default_plans: DefaultPlans {
+                        application_plan_id: 1234.into(),
+                        end_user_plan_id: None,
+                        service_plan_id: None,
+                    },
                     tenant_id: 101010,
                     deployment_option: DeploymentOption::SelfManaged,
                     display_provider_keys: true,
