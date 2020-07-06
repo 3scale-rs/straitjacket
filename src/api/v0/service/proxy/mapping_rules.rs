@@ -4,18 +4,18 @@ use straitjacket_macro::straitjacket;
 use crate::resources::Metadata;
 
 #[straitjacket]
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Default, Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct MappingRule {
-    id: u64,
-    metric_id: u64,
-    pattern: String,
-    http_method: String,
-    delta: u64,
-    position: u64,
-    last: bool,
-    tenant_id: Option<u64>,
-    metric_system_name: Option<String>,
-    redirect_url: Option<String>,
+    pub id: u64,
+    pub metric_id: u64,
+    pub pattern: String,
+    pub http_method: String,
+    pub delta: u64,
+    pub position: u64,
+    pub last: bool,
+    pub tenant_id: Option<u64>,
+    pub metric_system_name: Option<String>,
+    pub redirect_url: Option<String>,
     // parameters: Option<Vec<String>> ?
     // querystring_parameters - unknown type
 }
