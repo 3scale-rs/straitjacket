@@ -13,6 +13,11 @@ pub struct MappingRule {
     delta: u64,
     position: u64,
     last: bool,
+    tenant_id: Option<u64>,
+    metric_system_name: Option<String>,
+    redirect_url: Option<String>,
+    // parameters: Option<Vec<String>> ?
+    // querystring_parameters - unknown type
 }
 
 endpoint! { LIST, GET joining [ "/admin/api/services/", "/proxy/mapping_rules.json" ] returning MappingRules }
@@ -91,6 +96,9 @@ mod tests {
                 delta: 1,
                 position: 1,
                 last: false,
+                tenant_id: None,
+                metric_system_name: None,
+                redirect_url: None,
             },
             MappingRule {
                 id: 375842,
@@ -100,6 +108,9 @@ mod tests {
                 delta: 1,
                 position: 2,
                 last: false,
+                tenant_id: None,
+                metric_system_name: None,
+                redirect_url: None,
             },
         ]);
         let result = serde_json::to_string_pretty(&mapping_rules);

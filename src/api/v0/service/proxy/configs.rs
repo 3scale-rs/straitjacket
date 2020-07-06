@@ -1,4 +1,4 @@
-use serde::{Deserialize, Deserializer, Serialize};
+use serde::{Deserialize, Serialize};
 use straitjacket_macro::straitjacket;
 
 use crate::resources::Metadata;
@@ -10,21 +10,6 @@ use super::super::{AuthenticationMode, DeploymentOption};
 pub enum Environment {
     Staging,
     Production,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct Backend {
-    #[serde(deserialize_with = "parse_url", skip_serializing)]
-    endpoint: crate::deps::url::Url,
-    host: String,
-}
-
-fn parse_url<'de, D: Deserializer<'de>>(
-    deserializer: D,
-) -> Result<crate::deps::url::Url, D::Error> {
-    let string: String = Deserialize::deserialize(deserializer)?;
-    let url = crate::deps::url::Url::parse(&string);
-    url.map_err(serde::de::Error::custom)
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -89,15 +74,6 @@ pub struct Content {
     name: String,
     oneline_description: Option<String>,
     description: Option<String>,
-    /*
-    txt_api: ???,
-    txt_support: ???,
-    txt_features: ???,
-    infobar: ???,
-    terms: ???,
-    notification_settings: ???,
-    kubernetes_service_link: ???,
-    */
     #[serde(flatten)]
     logo_file: Option<LogoFile>,
     #[serde(flatten)]
@@ -122,7 +98,15 @@ pub struct Content {
     proxiable: bool,
     #[serde(flatten)]
     backend_authentication_type: BackendAuthentication,
-    //proxy: super::Proxy,
+    proxy: super::Proxy,
+    // Note that the structure is incomplete as some fields meaning/usage and even their types are unknown to me.
+    // txt_api: ???,
+    // txt_support: ???,
+    // txt_features: ???,
+    // infobar: ???,
+    // terms: ???,
+    // notification_settings: ???,
+    // kubernetes_service_link: ???,
 }
 
 #[straitjacket(name_snake = "proxy_config", plural_snake = "proxy_configs")]
@@ -140,7 +124,7 @@ endpoint! { LIST, GET joining [ "/admin/api/services/", "/proxy/configs/", ".jso
 mod tests {
     use super::*;
 
-    endpoint_test! { it_parses, LIST, r##"{
+    endpoint_test! { it_parses, LIST, r#"{
       "proxy_configs": [
         {
           "proxy_config": {
@@ -549,100 +533,124 @@ mod tests {
           }
         }
       ]
-    }"## }
+    }"# }
 
     #[test]
     fn it_serializes() {
+        use super::super::*;
+
         let support_emails = SupportEmails {
             support: "some@example.com".into(),
             tech: None,
             admin: None,
             credit_card: None,
         };
+        let content = Content {
+            id: 2555417777820,
+            account_id: 2555418191879,
+            description: Some("a config description".into()),
+            oneline_description: None,
+            logo_file: None,
+            support_emails: support_emails.clone(),
+            name: "a config".into(),
+            state: "unknown".into(),
+            draft_name: "draft".into(),
+            intentions_required: false,
+            buyer_settings: BuyerSettings {
+                buyer_can_select_plan: true,
+                buyer_key_regenerate_enabled: true,
+                buyer_plan_change_permission: "all".into(),
+                buyers_manage_apps: true,
+                buyers_manage_keys: true,
+            },
+            backend_authentication_type: BackendAuthentication::ProviderKey("aproviderkey".into()),
+            end_user_registration_required: false,
+            backend_version: AuthenticationMode::AppIdKey,
+            custom_keys_enabled: false,
+            default_plans: DefaultPlans {
+                application_plan_id: 1234.into(),
+                end_user_plan_id: None,
+                service_plan_id: None,
+            },
+            tenant_id: 101010,
+            deployment_option: DeploymentOption::SelfManaged,
+            display_provider_keys: true,
+            proxiable: true,
+            system_name: "my_config1".into(),
+            mandatory_app_key: false,
+            referrer_filters_required: false,
+            proxy: Proxy {
+                id: 1,
+                tenant_id: 2,
+                service_id: 3,
+                api_backend: url::Url::parse("https://3scale.net").expect("failed to parse url"),
+                endpoint: url::Url::parse("https://3scale.net").expect("failed to parse url"),
+                hostname_rewrite: "/".into(),
+                authentication_method: AuthenticationMode::APIKey,
+                auth_user_key: "abc".into(),
+                apicast_configuration_driven: false,
+                api_test_path: "/test".into(),
+                backend: Backend {
+                    endpoint: url::Url::parse("https://su1.3scale.net")
+                        .expect("failed to parse url"),
+                    host: "su1.3scale.net".into(),
+                },
+                credentials_location: CredentialsLocation::Query,
+                deployed_at: Some("preview-cluster".into()),
+                endpoint_port: 80,
+                error_config: ErrorConfig {
+                    auth_failed: Some("auth failed".into()),
+                    auth_missing: Some("auth missing".into()),
+                    no_match: Some("no match".into()),
+                    headers_auth_failed: Some("text/plain; charset=us-ascii".into()),
+                    headers_auth_missing: Some("text/plain; charset=us-ascii".into()),
+                    headers_limits_exceeded: Some("text/plain; charset=us-ascii".into()),
+                    headers_no_match: Some("text/plain; charset=us-ascii".into()),
+                    status_auth_failed: Some(403),
+                    status_auth_missing: Some(403),
+                    status_limits_exceeded: Some(428),
+                    status_no_match: Some(400),
+                },
+                auth_app_id: "anid".into(),
+                auth_app_key: "akey".into(),
+                hosts: vec![],
+                jwt_claim: None,
+                hostname_rewrite_for_sandbox: "hostname".into(),
+                lock_version: 1,
+                oauth_login_url: None,
+                oidc_issuer: None,
+                sandbox_endpoint: None,
+                secret_token: "atoken".into(),
+                service_backend_version: "1".into(),
+                valid: true,
+                proxy_rules: vec![mapping_rules::MappingRule {
+                    id: 1,
+                    metric_id: 1,
+                    delta: 1,
+                    http_method: "POST".into(),
+                    pattern: "/".into(),
+                    last: false,
+                    metric_system_name: None,
+                    position: 1,
+                    redirect_url: None,
+                    tenant_id: None,
+                }],
+            },
+        };
+        let content_clone = content.clone();
+
         let configs = Configs::from(vec![
             Config {
                 id: 375841,
                 version: 1,
                 environment: Environment::Production,
-                content: Content {
-                    id: 2555417777820,
-                    account_id: 2555418191879,
-                    description: Some("a config description".into()),
-                    oneline_description: None,
-                    logo_file: None,
-                    support_emails: support_emails.clone(),
-                    name: "a config".into(),
-                    state: "unknown".into(),
-                    draft_name: "draft".into(),
-                    intentions_required: false,
-                    buyer_settings: BuyerSettings {
-                        buyer_can_select_plan: true,
-                        buyer_key_regenerate_enabled: true,
-                        buyer_plan_change_permission: "all".into(),
-                        buyers_manage_apps: true,
-                        buyers_manage_keys: true,
-                    },
-                    backend_authentication_type: BackendAuthentication::ProviderKey(
-                        "aproviderkey".into(),
-                    ),
-                    end_user_registration_required: false,
-                    backend_version: AuthenticationMode::AppIdKey,
-                    custom_keys_enabled: false,
-                    default_plans: DefaultPlans {
-                        application_plan_id: 1234.into(),
-                        end_user_plan_id: None,
-                        service_plan_id: None,
-                    },
-                    tenant_id: 101010,
-                    deployment_option: DeploymentOption::SelfManaged,
-                    display_provider_keys: true,
-                    proxiable: true,
-                    system_name: "my_config1".into(),
-                    mandatory_app_key: false,
-                    referrer_filters_required: false,
-                },
+                content,
             },
             Config {
                 id: 375841,
                 version: 2,
                 environment: Environment::Production,
-                content: Content {
-                    id: 2555417777821,
-                    account_id: 2555418191879,
-                    description: Some("a config description".into()),
-                    oneline_description: None,
-                    logo_file: None,
-                    support_emails: support_emails.clone(),
-                    name: "a config".into(),
-                    state: "unknown".into(),
-                    draft_name: "draft".into(),
-                    intentions_required: false,
-                    buyer_settings: BuyerSettings {
-                        buyer_can_select_plan: true,
-                        buyer_key_regenerate_enabled: true,
-                        buyer_plan_change_permission: "all".into(),
-                        buyers_manage_apps: true,
-                        buyers_manage_keys: true,
-                    },
-                    backend_authentication_type: BackendAuthentication::ProviderKey(
-                        "aproviderkey".into(),
-                    ),
-                    end_user_registration_required: false,
-                    backend_version: AuthenticationMode::AppIdKey,
-                    custom_keys_enabled: false,
-                    default_plans: DefaultPlans {
-                        application_plan_id: 1234.into(),
-                        end_user_plan_id: None,
-                        service_plan_id: None,
-                    },
-                    tenant_id: 101010,
-                    deployment_option: DeploymentOption::SelfManaged,
-                    display_provider_keys: true,
-                    proxiable: true,
-                    system_name: "my_config1".into(),
-                    mandatory_app_key: false,
-                    referrer_filters_required: false,
-                },
+                content: content_clone,
             },
         ]);
         let result = serde_json::to_string_pretty(&configs);
