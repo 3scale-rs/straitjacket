@@ -4,15 +4,20 @@ use straitjacket_macro::straitjacket;
 use crate::resources::Metadata;
 
 #[straitjacket]
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Default, Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct MappingRule {
-    id: u64,
-    metric_id: u64,
-    pattern: String,
-    http_method: String,
-    delta: u64,
-    position: u64,
-    last: bool,
+    pub id: u64,
+    pub metric_id: u64,
+    pub pattern: String,
+    pub http_method: String,
+    pub delta: u64,
+    pub position: u64,
+    pub last: bool,
+    pub tenant_id: Option<u64>,
+    pub metric_system_name: Option<String>,
+    pub redirect_url: Option<String>,
+    // parameters: Option<Vec<String>> ?
+    // querystring_parameters - unknown type
 }
 
 endpoint! { LIST, GET joining [ "/admin/api/services/", "/proxy/mapping_rules.json" ] returning MappingRules }
@@ -91,6 +96,9 @@ mod tests {
                 delta: 1,
                 position: 1,
                 last: false,
+                tenant_id: None,
+                metric_system_name: None,
+                redirect_url: None,
             },
             MappingRule {
                 id: 375842,
@@ -100,6 +108,9 @@ mod tests {
                 delta: 1,
                 position: 2,
                 last: false,
+                tenant_id: None,
+                metric_system_name: None,
+                redirect_url: None,
             },
         ]);
         let result = serde_json::to_string_pretty(&mapping_rules);
