@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use straitjacket_macro::straitjacket;
 
+pub mod application;
 pub mod feature;
 pub mod plan;
 pub mod user;

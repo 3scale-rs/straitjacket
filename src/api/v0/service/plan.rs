@@ -14,19 +14,20 @@ pub enum State {
 #[straitjacket(name_snake = "application_plan")]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Plan {
-    custom: Option<bool>,
-    default: Option<bool>,
     id: u64,
     name: String,
     #[serde(rename = "type")]
     type_: Option<String>,
     #[serde(rename(serialize = "state_event"))]
     state: State,
-    approval_required: bool,
     setup_fee: f64,
     cost_per_month: f64,
     trial_period_days: Option<u64>, // strangely this might return empty contents when listing but not when reading
     cancellation_period: Option<u64>,
+    approval_required: bool,
+    default: Option<bool>,
+    custom: Option<bool>,
+    system_name: Option<String>,
 }
 
 endpoint! { LIST, GET joining [ "/admin/api/services/", "/application_plans.json"] returning Plans }
