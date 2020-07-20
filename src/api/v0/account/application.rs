@@ -13,21 +13,21 @@ pub enum State {
 #[straitjacket]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Application {
-    id: u64,
-    name: String,
-    description: String,
-    state: State,
-    enabled: bool,
-    service_id: u64,
-    service_name: Option<String>,
-    plan_id: u64,
-    plan_name: Option<String>,
-    account_id: u64,
-    org_name: Option<String>,
-    first_traffic_at: Option<String>,
-    first_daily_traffic_at: Option<String>,
-    user_key: Option<String>,
-    provider_verification_key: Option<String>,
+    pub id: u64,
+    pub name: String,
+    pub description: String,
+    pub state: State,
+    pub enabled: bool,
+    pub service_id: u64,
+    pub service_name: Option<String>,
+    pub plan_id: u64,
+    pub plan_name: Option<String>,
+    pub account_id: u64,
+    pub org_name: Option<String>,
+    pub first_traffic_at: Option<String>,
+    pub first_daily_traffic_at: Option<String>,
+    pub user_key: Option<String>,
+    pub provider_verification_key: Option<String>,
 }
 
 endpoint! { EP_LIST_APPLICATIONS, GET joining [ "/admin/api/accounts/", "/applications.json" ] returning Applications }
