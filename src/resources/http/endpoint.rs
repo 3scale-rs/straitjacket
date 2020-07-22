@@ -106,22 +106,22 @@ macro_rules! endpoint {
         endpoint! { $endpoint, http::Method::GET, $($body)+ }
     };
     { $endpoint:ident, PUT $($body:tt)+ } => {
-        endpoint! { $endpoint, http::Method::GET, $($body)+ }
+        endpoint! { $endpoint, http::Method::PUT, $($body)+ }
     };
     { $endpoint:ident, PATCH $($body:tt)+ } => {
-        endpoint! { $endpoint, http::Method::GET, $($body)+ }
+        endpoint! { $endpoint, http::Method::PATCH, $($body)+ }
     };
     { $endpoint:ident, POST $($body:tt)+ } => {
-        endpoint! { $endpoint, http::Method::GET, $($body)+ }
+        endpoint! { $endpoint, http::Method::POST, $($body)+ }
     };
     { $endpoint:ident, DELETE $($body:tt)+ } => {
-        endpoint! { $endpoint, http::Method::GET, $($body)+ }
+        endpoint! { $endpoint, http::Method::DELETE, $($body)+ }
     };
     { $endpoint:ident, HEAD $($body:tt)+ } => {
-        endpoint! { $endpoint, http::Method::GET, $($body)+ }
+        endpoint! { $endpoint, http::Method::HEAD, $($body)+ }
     };
     { $endpoint:ident, OPTIONS $($body:tt)+ } => {
-        endpoint! { $endpoint, http::Method::GET, $($body)+ }
+        endpoint! { $endpoint, http::Method::OPTIONS, $($body)+ }
     };
 }
 
