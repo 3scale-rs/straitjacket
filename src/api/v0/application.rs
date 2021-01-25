@@ -1,5 +1,4 @@
 use serde::{Deserialize, Serialize};
-use straitjacket_macro::straitjacket;
 
 pub type Metadata = crate::resources::Metadata;
 
