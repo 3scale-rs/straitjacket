@@ -11,6 +11,6 @@ serde = { version = "^1", features = ["derive"] }
 serde_json = "^1"
 straitjacket_macro = { git = "https://github.com/3scale-rs/straitjacket_macro", branch = "master" }
 reqwest = { version = "*", features = ["blocking", "json"] }
-url = "^2"
+url = { git = "https://github.com/3scale-rs/rust-url", branch = "3scale", features = ["serde"] }
 http = "^0.2"
 lazy_static = "^1"
