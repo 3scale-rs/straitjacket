@@ -12,14 +12,17 @@ pub mod resources;
 
 pub mod api;
 
+#[cfg(client)]
 pub mod client;
 
 /// Public dependencies for downstream crate compatibility
 pub mod deps {
+    #[cfg(client)]
     pub use reqwest;
     pub use url;
 }
 
+#[cfg(client)]
 pub use deps::reqwest;
 pub use deps::url;
 
