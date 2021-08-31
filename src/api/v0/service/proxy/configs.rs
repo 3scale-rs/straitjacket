@@ -111,6 +111,60 @@ pub struct Content {
     // kubernetes_service_link: ???,
 }
 
+impl Content {
+    pub fn id(&self) -> u64 {
+        self.id
+    }
+
+    pub fn account_id(&self) -> u64 {
+        self.account_id
+    }
+
+    pub fn tenant_id(&self) -> u64 {
+        self.tenant_id
+    }
+
+    pub fn name(&self) -> &str {
+        self.name.as_str()
+    }
+
+    pub fn system_name(&self) -> &str {
+        self.system_name.as_str()
+    }
+
+    pub fn draft_name(&self) -> &str {
+        self.draft_name.as_str()
+    }
+
+    pub fn state(&self) -> &str {
+        self.state.as_str()
+    }
+
+    pub fn backend_version(&self) -> AuthenticationMode {
+        self.backend_version
+    }
+
+    pub fn mandatory_app_key(&self) -> bool {
+        self.mandatory_app_key
+    }
+
+    pub fn deployment_option(&self) -> DeploymentOption {
+        self.deployment_option
+    }
+
+    pub fn is_proxiable(&self) -> bool {
+        self.proxiable
+    }
+
+    pub fn backend_authentication(&self) -> &BackendAuthentication {
+        &self.backend_authentication_type
+    }
+
+    pub fn proxy(&self) -> &super::Proxy {
+        &self.proxy
+    }
+}
+
 #[straitjacket(name_snake = "proxy_config", plural_snake = "proxy_configs")]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Config {
@@ -118,6 +172,24 @@ pub struct Config {
     version: u64,
     environment: Environment,
     content: Content,
+}
+
+impl Config {
+    pub fn id(&self) -> u64 {
+        self.id
+    }
+
+    pub fn version(&self) -> u64 {
+        self.version
+    }
+
+    pub fn environment(&self) -> &Environment {
+        &self.environment
+    }
+
+    pub fn content(&self) -> &Content {
+        &self.content
+    }
 }
 
 endpoint! { LIST, GET joining [ "/admin/api/services/", "/proxy/configs/", ".json" ] returning Configs }
