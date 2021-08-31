@@ -9,6 +9,8 @@ pub enum AuthenticationProviderKind {
     Auth0,
     #[serde(rename = "keycloak")]
     KeyCloak,
+    #[serde(other)]
+    Unknown,
 }
 
 #[straitjacket]

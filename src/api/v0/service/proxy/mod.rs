@@ -3,6 +3,8 @@ use straitjacket_macro::straitjacket;
 
 use crate::resources::Metadata;
 
+use super::AuthenticationMode;
+
 pub mod configs;
 pub mod mapping_rules;
 
@@ -39,12 +41,14 @@ pub struct Backend {
     host: String,
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum CredentialsLocation {
     Headers,
     Query,
     Authorization,
+    #[serde(other)]
+    Unknown,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -74,11 +78,47 @@ pub struct ErrorConfig {
     status_limits_exceeded: Option<u64>,
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+impl ErrorConfig {
+    // Return parameters: (error message, content-type, status code)
+    pub fn auth_failed(&self) -> (Option<&str>, Option<&str>, Option<u64>) {
+        (
+            self.auth_failed.as_deref(),
+            self.headers_auth_failed.as_deref(),
+            self.status_auth_failed,
+        )
+    }
+
+    pub fn auth_missing(&self) -> (Option<&str>, Option<&str>, Option<u64>) {
+        (
+            self.auth_missing.as_deref(),
+            self.headers_auth_missing.as_deref(),
+            self.status_auth_missing,
+        )
+    }
+    pub fn no_match(&self) -> (Option<&str>, Option<&str>, Option<u64>) {
+        (
+            self.no_match.as_deref(),
+            self.headers_no_match.as_deref(),
+            self.status_no_match,
+        )
+    }
+
+    pub fn limits_exceeded(&self) -> (Option<&str>, Option<&str>, Option<u64>) {
+        (
+            None, // Weirdly this is not provided currently !?
+            self.headers_limits_exceeded.as_deref(),
+            self.status_limits_exceeded,
+        )
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum JWTClaimClientIDType {
     Plain,
     Liquid,
+    #[serde(other)]
+    Unknown,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -89,6 +129,16 @@ pub struct JWTClaim {
     client_type: Option<JWTClaimClientIDType>,
 }
 
+impl JWTClaim {
+    pub fn client_id(&self) -> Option<&str> {
+        self.client_id.as_deref()
+    }
+
+    pub fn client_type(&self) -> Option<JWTClaimClientIDType> {
+        self.client_type
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct OIDCIssuer {
     #[serde(rename = "oidc_issuer_endpoint")]
@@ -97,6 +147,15 @@ pub struct OIDCIssuer {
     r#type: Option<String>,
 }
 
+impl OIDCIssuer {
+    pub fn endpoint(&self) -> Option<&str> {
+        self.endpoint.as_deref()
+    }
+
+    pub fn issuer_type(&self) -> Option<&str> {
+        self.r#type.as_deref()
+    }
+}
 #[straitjacket]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Proxy {
@@ -136,7 +195,7 @@ pub struct Proxy {
     service_backend_version: String,
     hosts: Vec<String>,
     backend: Backend,
-    proxy_rules: Vec<self::mapping_rules::MappingRule>,
+    proxy_rules: Vec<mapping_rules::MappingRule>,
     // These below are currently ignored:
     //"api_test_success": null,
     //"policy_chain": [
@@ -146,6 +205,94 @@ pub struct Proxy {
     //    "configuration": {}
     //  }
     //],
+}
+
+impl Proxy {
+    pub fn is_valid(&self) -> bool {
+        self.valid
+    }
+
+    pub fn id(&self) -> u64 {
+        self.id
+    }
+
+    pub fn tenant_id(&self) -> u64 {
+        self.tenant_id
+    }
+
+    pub fn service_id(&self) -> u64 {
+        self.service_id
+    }
+
+    pub fn endpoint(&self) -> &url::Url {
+        &self.endpoint
+    }
+
+    pub fn endpoint_port(&self) -> u64 {
+        self.endpoint_port
+    }
+
+    pub fn api_backend(&self) -> &url::Url {
+        &self.api_backend
+    }
+
+    pub fn auth_app_id(&self) -> &str {
+        self.auth_app_id.as_str()
+    }
+    pub fn auth_app_key(&self) -> &str {
+        self.auth_app_key.as_str()
+    }
+    pub fn auth_user_key(&self) -> &str {
+        self.auth_user_key.as_str()
+    }
+
+    pub fn credentials_location(&self) -> CredentialsLocation {
+        self.credentials_location
+    }
+
+    pub fn error_config(&self) -> &ErrorConfig {
+        &self.error_config
+    }
+
+    pub fn secret_token(&self) -> &str {
+        self.secret_token.as_str()
+    }
+
+    pub fn hostname_rewrite(&self) -> &str {
+        self.hostname_rewrite.as_str()
+    }
+
+    pub fn oauth_login_url(&self) -> Option<&url::Url> {
+        self.oauth_login_url.as_ref()
+    }
+
+    pub fn oidc_issuer(&self) -> Option<&OIDCIssuer> {
+        self.oidc_issuer.as_ref()
+    }
+
+    pub fn jwt_claim(&self) -> Option<&JWTClaim> {
+        self.jwt_claim.as_ref()
+    }
+
+    pub fn authentication_method(&self) -> AuthenticationMode {
+        self.authentication_method
+    }
+
+    pub fn service_backend_version(&self) -> &str {
+        self.service_backend_version.as_str()
+    }
+
+    pub fn hosts(&self) -> &[String] {
+        self.hosts.as_slice()
+    }
+
+    pub fn backend(&self) -> &Backend {
+        &self.backend
+    }
+
+    pub fn mapping_rules(&self) -> &[mapping_rules::MappingRule] {
+        self.proxy_rules.as_slice()
+    }
 }
 
 #[cfg(test)]

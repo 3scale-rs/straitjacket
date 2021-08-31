@@ -8,6 +8,8 @@ pub type Metadata = crate::resources::Metadata;
 pub enum State {
     Live,
     Suspended,
+    #[serde(other)]
+    Unknown,
 }
 
 #[straitjacket]
