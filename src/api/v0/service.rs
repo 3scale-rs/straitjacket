@@ -13,6 +13,8 @@ pub enum DeploymentOption {
     SelfManaged,
     ServiceMeshIstio,
     PluginRest,
+    #[serde(other)]
+    Unknown,
 }
 
 #[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize)]
@@ -23,6 +25,8 @@ pub enum AuthenticationMode {
     AppIdKey,
     #[serde(rename = "oidc")]
     OIDC,
+    #[serde(other)]
+    Unknown,
 }
 
 // Work around embedding Metadata into Service.

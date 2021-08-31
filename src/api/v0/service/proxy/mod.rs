@@ -45,6 +45,8 @@ pub enum CredentialsLocation {
     Headers,
     Query,
     Authorization,
+    #[serde(other)]
+    Unknown,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -79,6 +81,8 @@ pub struct ErrorConfig {
 pub enum JWTClaimClientIDType {
     Plain,
     Liquid,
+    #[serde(other)]
+    Unknown,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]

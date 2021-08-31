@@ -10,6 +10,8 @@ use super::super::{AuthenticationMode, DeploymentOption};
 pub enum Environment {
     Staging,
     Production,
+    #[serde(other)]
+    Unknown,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]

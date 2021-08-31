@@ -9,6 +9,8 @@ pub enum State {
     Published,
     #[serde(rename(serialize = "hide", deserialize = "hidden"))]
     Hidden,
+    #[serde(other)]
+    Unknown,
 }
 
 #[straitjacket(name_snake = "account_plan")]

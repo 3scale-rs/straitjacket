@@ -13,6 +13,8 @@ pub enum Period {
     Month,
     Year,
     Eternity,
+    #[serde(other)]
+    Unknown,
 }
 
 #[straitjacket]
