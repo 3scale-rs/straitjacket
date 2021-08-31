@@ -39,7 +39,7 @@ pub struct Backend {
     host: String,
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum CredentialsLocation {
     Headers,
@@ -76,7 +76,7 @@ pub struct ErrorConfig {
     status_limits_exceeded: Option<u64>,
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum JWTClaimClientIDType {
     Plain,
