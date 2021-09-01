@@ -53,7 +53,7 @@ impl Metadata {
     }
 
     pub fn links(&self) -> Option<&[Link]> {
-        self.links.as_ref().map(std::vec::Vec::as_slice)
+        self.links.as_deref()
     }
 
     pub fn find_link(&self, rel: &str) -> Option<&Link> {

@@ -18,12 +18,12 @@ pub(self) fn parse_url_opt<'de, D: Deserializer<'de>>(
     deserializer: D,
 ) -> Result<Option<url::Url>, D::Error> {
     let string: Result<String, _> = Deserialize::deserialize(deserializer);
-    if let Err(_) = string {
+    if string.is_err() {
         return Ok(None);
     }
     let string = string.unwrap();
     let url = url::Url::parse(&string);
-    url.map(|u| Some(u)).map_err(serde::de::Error::custom)
+    url.map(Some).map_err(serde::de::Error::custom)
 }
 
 pub(self) fn serialize_url<S: Serializer>(
