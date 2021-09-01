@@ -1,5 +1,4 @@
-#![warn(clippy::all)]
-#![cfg_attr(nightly, feature(const_fn))]
+#![deny(clippy::all)]
 
 //! A library to deal with 3scale Porta.
 //!
