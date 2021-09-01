@@ -9,21 +9,11 @@ pub struct Endpoint<'a, 's, M> {
 }
 
 impl<'a, 's, M> Endpoint<'a, 's, M> {
-    #[cfg(const_fn)]
     pub const fn new(
         method: Method,
         segments: &'a [&'s str],
         quantifier: ParameterQuantifier,
     ) -> Self {
-        Endpoint {
-            method,
-            path_builder: PathBuilder::new(segments, quantifier),
-            datatype: std::marker::PhantomData,
-        }
-    }
-
-    #[cfg(not(const_fn))]
-    pub fn new(method: Method, segments: &'a [&'s str], quantifier: ParameterQuantifier) -> Self {
         Endpoint {
             method,
             path_builder: PathBuilder::new(segments, quantifier),
@@ -88,13 +78,7 @@ macro_rules! endpoint {
         use crate::resources::http::endpoint::Endpoint;
         use crate::resources::http::path_builder::ParameterQuantifier;
 
-        #[cfg(const_fn)]
         pub const $endpoint: Endpoint<'_, '_, $object> = Endpoint::new($method, &[$($segments),+], $paramjoin);
-
-        #[cfg(not(const_fn))]
-        lazy_static::lazy_static! {
-          pub static ref $endpoint: Endpoint<'static, 'static, $object> = Endpoint::new($method, &[$($segments),+], $paramjoin);
-        }
     };
     { $endpoint:ident, $method:expr, joining $($body:tt)+ } => {
         endpoint! { $endpoint, $method, ParameterQuantifier::JoiningSegments, $($body)+ }
