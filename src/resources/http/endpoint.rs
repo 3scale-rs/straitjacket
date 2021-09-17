@@ -75,16 +75,13 @@ macro_rules! endpoint_test {
 
 macro_rules! endpoint {
     { $endpoint:ident, $method:expr, $paramjoin:path, [ $($segments:expr),+ ] returning $object:ty } => {
-        use crate::resources::http::endpoint::Endpoint;
-        use crate::resources::http::path_builder::ParameterQuantifier;
-
-        pub const $endpoint: Endpoint<'_, '_, $object> = Endpoint::new($method, &[$($segments),+], $paramjoin);
+        pub const $endpoint: crate::resources::http::endpoint::Endpoint<'_, '_, $object> = crate::resources::http::endpoint::Endpoint::new($method, &[$($segments),+], $paramjoin);
     };
     { $endpoint:ident, $method:expr, joining $($body:tt)+ } => {
-        endpoint! { $endpoint, $method, ParameterQuantifier::JoiningSegments, $($body)+ }
+        endpoint! { $endpoint, $method, crate::resources::http::path_builder::ParameterQuantifier::JoiningSegments, $($body)+ }
     };
     { $endpoint:ident, $method:expr, pairing $($body:tt)+ } => {
-        endpoint! { $endpoint, $method, ParameterQuantifier::PairingSegments, $($body)+ }
+        endpoint! { $endpoint, $method, crate::resources::http::path_builder::ParameterQuantifier::PairingSegments, $($body)+ }
     };
     { $endpoint:ident, GET $($body:tt)+ } => {
         endpoint! { $endpoint, http::Method::GET, $($body)+ }
