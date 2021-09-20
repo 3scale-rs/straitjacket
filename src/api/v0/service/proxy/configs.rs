@@ -8,6 +8,7 @@ use super::super::{AuthenticationMode, DeploymentOption};
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Environment {
+    Sandbox,
     Staging,
     Production,
     #[serde(other)]
