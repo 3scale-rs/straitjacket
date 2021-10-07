@@ -666,7 +666,7 @@ mod tests {
                     api_backend: url::Url::parse("https://3scale.net")
                         .expect("failed to parse url"),
                     endpoint: url::Url::parse("https://3scale.net").expect("failed to parse url"),
-                    hostname_rewrite: "/".into(),
+                    hostname_rewrite: Some("/".into()),
                     authentication_method: AuthenticationMode::APIKey,
                     auth_user_key: "abc".into(),
                     apicast_configuration_driven: false,
@@ -925,7 +925,7 @@ mod tests {
                     api_backend: url::Url::parse("https://3scale.net")
                         .expect("failed to parse url"),
                     endpoint: url::Url::parse("https://3scale.net").expect("failed to parse url"),
-                    hostname_rewrite: "/".into(),
+                    hostname_rewrite: Some("/".into()),
                     authentication_method: AuthenticationMode::APIKey,
                     auth_user_key: "abc".into(),
                     apicast_configuration_driven: false,
