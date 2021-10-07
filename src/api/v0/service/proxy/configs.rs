@@ -83,7 +83,7 @@ pub struct Content {
     support_emails: SupportEmails,
     state: String,
     intentions_required: bool,
-    draft_name: String,
+    draft_name: Option<String>,
     display_provider_keys: bool,
     custom_keys_enabled: bool,
     #[serde(flatten)]
@@ -133,8 +133,8 @@ impl Content {
         self.system_name.as_str()
     }
 
-    pub fn draft_name(&self) -> &str {
-        self.draft_name.as_str()
+    pub fn draft_name(&self) -> Option<&str> {
+        self.draft_name.as_deref()
     }
 
     pub fn state(&self) -> &str {
@@ -632,7 +632,7 @@ mod tests {
                 support_emails: support_emails.clone(),
                 name: "a config".into(),
                 state: "unknown".into(),
-                draft_name: "draft".into(),
+                draft_name: Some("draft".into()),
                 intentions_required: false,
                 buyer_settings: BuyerSettings {
                     buyer_can_select_plan: true,
@@ -891,7 +891,7 @@ mod tests {
                 support_emails: support_emails.clone(),
                 name: "a config".into(),
                 state: "unknown".into(),
-                draft_name: "draft".into(),
+                draft_name: Some("draft".into()),
                 intentions_required: false,
                 buyer_settings: BuyerSettings {
                     buyer_can_select_plan: true,
