@@ -90,7 +90,7 @@ pub struct Content {
     buyer_settings: BuyerSettings,
     #[serde(flatten)]
     default_plans: DefaultPlans,
-    end_user_registration_required: bool,
+    end_user_registration_required: Option<bool>,
     tenant_id: u64,
     system_name: String,
     backend_version: AuthenticationMode,
@@ -644,7 +644,7 @@ mod tests {
                 backend_authentication_type: BackendAuthentication::ProviderKey(
                     "aproviderkey".into(),
                 ),
-                end_user_registration_required: false,
+                end_user_registration_required: Some(false),
                 backend_version: AuthenticationMode::AppIdKey,
                 custom_keys_enabled: false,
                 default_plans: DefaultPlans {
@@ -903,7 +903,7 @@ mod tests {
                 backend_authentication_type: BackendAuthentication::ProviderKey(
                     "aproviderkey".into(),
                 ),
-                end_user_registration_required: false,
+                end_user_registration_required: Some(false),
                 backend_version: AuthenticationMode::AppIdKey,
                 custom_keys_enabled: false,
                 default_plans: DefaultPlans {
