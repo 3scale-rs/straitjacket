@@ -166,7 +166,7 @@ impl Content {
     }
 }
 
-#[straitjacket(name_snake = "proxy_config", plural_snake = "proxy_configs")]
+#[straitjacket(name_tag = "ProxyConfig", name_snake = "proxy_config", plural_snake = "proxy_configs")]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Config {
     id: u64,
@@ -194,7 +194,7 @@ impl Config {
 }
 
 endpoint! { LIST, GET joining [ "/admin/api/services/", "/proxy/configs/", ".json" ] returning Configs }
-endpoint! { LATEST, GET joining [ "/admin/api/services/", "/proxy/configs/", "/latest.json" ] returning Config }
+endpoint! { LATEST, GET joining [ "/admin/api/services/", "/proxy/configs/", "/latest.json" ] returning ProxyConfig }
 
 #[cfg(test)]
 mod tests {
@@ -748,7 +748,6 @@ mod tests {
         use super::*;
 
         endpoint_test! { it_parses, LATEST, r#"{
-          {
             "proxy_config": {
               "id": 92726,
               "version": 1,
@@ -871,8 +870,7 @@ mod tests {
                 }
               }
             }
-          }
-        }"# }
+          }"# }
 
         #[test]
         fn it_serializes() {
@@ -980,12 +978,15 @@ mod tests {
                 },
             };
 
-            let config = Config {
+            let config = ProxyConfig::Tag(ConfigAndMetadata {
+              item: Config {
                 id: 375841,
                 version: 1,
                 environment: Environment::Production,
                 content,
-            };
+              },
+              metadata: None
+            });
             let result = serde_json::to_string_pretty(&config);
             match result {
                 Err(ref e) => println!("Error: {:#?}", e),
