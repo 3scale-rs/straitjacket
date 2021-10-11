@@ -174,7 +174,7 @@ pub struct Proxy {
     #[serde(flatten)]
     error_config: ErrorConfig,
     secret_token: String,
-    hostname_rewrite: String,
+    hostname_rewrite: Option<String>,
     #[serde(deserialize_with = "parse_url_opt", skip_serializing)]
     oauth_login_url: Option<url::Url>,
     #[serde(deserialize_with = "parse_url_opt", skip_serializing)]
@@ -258,8 +258,8 @@ impl Proxy {
         self.secret_token.as_str()
     }
 
-    pub fn hostname_rewrite(&self) -> &str {
-        self.hostname_rewrite.as_str()
+    pub fn hostname_rewrite(&self) -> Option<&str> {
+        self.hostname_rewrite.as_deref()
     }
 
     pub fn oauth_login_url(&self) -> Option<&url::Url> {
@@ -324,7 +324,7 @@ mod tests {
           "error_status_no_match": 404,
           "error_headers_no_match": "text/plain; charset=us-ascii",
           "secret_token": "MySecretTokenBetweenApicastAndMyBackend_1237120312",
-          "hostname_rewrite": "",
+          "hostname_rewrite": null,
           "oauth_login_url": null,
           "sandbox_endpoint": "http://staging.3scale.net:80",
           "api_test_path": "/",

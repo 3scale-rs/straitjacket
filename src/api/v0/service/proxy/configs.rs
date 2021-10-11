@@ -83,14 +83,14 @@ pub struct Content {
     support_emails: SupportEmails,
     state: String,
     intentions_required: bool,
-    draft_name: String,
-    display_provider_keys: bool,
+    draft_name: Option<String>,
+    display_provider_keys: Option<bool>,
     custom_keys_enabled: bool,
     #[serde(flatten)]
     buyer_settings: BuyerSettings,
     #[serde(flatten)]
     default_plans: DefaultPlans,
-    end_user_registration_required: bool,
+    end_user_registration_required: Option<bool>,
     tenant_id: u64,
     system_name: String,
     backend_version: AuthenticationMode,
@@ -133,8 +133,8 @@ impl Content {
         self.system_name.as_str()
     }
 
-    pub fn draft_name(&self) -> &str {
-        self.draft_name.as_str()
+    pub fn draft_name(&self) -> Option<&str> {
+        self.draft_name.as_deref()
     }
 
     pub fn state(&self) -> &str {
@@ -166,7 +166,7 @@ impl Content {
     }
 }
 
-#[straitjacket(name_snake = "proxy_config", plural_snake = "proxy_configs")]
+#[straitjacket(name_tag = "ProxyConfig", name_snake = "proxy_config", plural_snake = "proxy_configs")]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Config {
     id: u64,
@@ -194,7 +194,7 @@ impl Config {
 }
 
 endpoint! { LIST, GET joining [ "/admin/api/services/", "/proxy/configs/", ".json" ] returning Configs }
-endpoint! { LATEST, GET joining [ "/admin/api/services/", "/proxy/configs/", "/latest.json" ] returning Config }
+endpoint! { LATEST, GET joining [ "/admin/api/services/", "/proxy/configs/", "/latest.json" ] returning ProxyConfig }
 
 #[cfg(test)]
 mod tests {
@@ -632,7 +632,7 @@ mod tests {
                 support_emails: support_emails.clone(),
                 name: "a config".into(),
                 state: "unknown".into(),
-                draft_name: "draft".into(),
+                draft_name: Some("draft".into()),
                 intentions_required: false,
                 buyer_settings: BuyerSettings {
                     buyer_can_select_plan: true,
@@ -644,7 +644,7 @@ mod tests {
                 backend_authentication_type: BackendAuthentication::ProviderKey(
                     "aproviderkey".into(),
                 ),
-                end_user_registration_required: false,
+                end_user_registration_required: Some(false),
                 backend_version: AuthenticationMode::AppIdKey,
                 custom_keys_enabled: false,
                 default_plans: DefaultPlans {
@@ -654,7 +654,7 @@ mod tests {
                 },
                 tenant_id: 101010,
                 deployment_option: DeploymentOption::SelfManaged,
-                display_provider_keys: true,
+                display_provider_keys: Some(true),
                 proxiable: true,
                 system_name: "my_config1".into(),
                 mandatory_app_key: false,
@@ -666,7 +666,7 @@ mod tests {
                     api_backend: url::Url::parse("https://3scale.net")
                         .expect("failed to parse url"),
                     endpoint: url::Url::parse("https://3scale.net").expect("failed to parse url"),
-                    hostname_rewrite: "/".into(),
+                    hostname_rewrite: Some("/".into()),
                     authentication_method: AuthenticationMode::APIKey,
                     auth_user_key: "abc".into(),
                     apicast_configuration_driven: false,
@@ -748,7 +748,6 @@ mod tests {
         use super::*;
 
         endpoint_test! { it_parses, LATEST, r#"{
-          {
             "proxy_config": {
               "id": 92726,
               "version": 1,
@@ -871,8 +870,7 @@ mod tests {
                 }
               }
             }
-          }
-        }"# }
+          }"# }
 
         #[test]
         fn it_serializes() {
@@ -893,7 +891,7 @@ mod tests {
                 support_emails: support_emails.clone(),
                 name: "a config".into(),
                 state: "unknown".into(),
-                draft_name: "draft".into(),
+                draft_name: Some("draft".into()),
                 intentions_required: false,
                 buyer_settings: BuyerSettings {
                     buyer_can_select_plan: true,
@@ -905,7 +903,7 @@ mod tests {
                 backend_authentication_type: BackendAuthentication::ProviderKey(
                     "aproviderkey".into(),
                 ),
-                end_user_registration_required: false,
+                end_user_registration_required: Some(false),
                 backend_version: AuthenticationMode::AppIdKey,
                 custom_keys_enabled: false,
                 default_plans: DefaultPlans {
@@ -915,7 +913,7 @@ mod tests {
                 },
                 tenant_id: 101010,
                 deployment_option: DeploymentOption::SelfManaged,
-                display_provider_keys: true,
+                display_provider_keys: Some(true),
                 proxiable: true,
                 system_name: "my_config1".into(),
                 mandatory_app_key: false,
@@ -927,7 +925,7 @@ mod tests {
                     api_backend: url::Url::parse("https://3scale.net")
                         .expect("failed to parse url"),
                     endpoint: url::Url::parse("https://3scale.net").expect("failed to parse url"),
-                    hostname_rewrite: "/".into(),
+                    hostname_rewrite: Some("/".into()),
                     authentication_method: AuthenticationMode::APIKey,
                     auth_user_key: "abc".into(),
                     apicast_configuration_driven: false,
@@ -980,12 +978,15 @@ mod tests {
                 },
             };
 
-            let config = Config {
+            let config = ProxyConfig::Tag(ConfigAndMetadata {
+              item: Config {
                 id: 375841,
                 version: 1,
                 environment: Environment::Production,
                 content,
-            };
+              },
+              metadata: None
+            });
             let result = serde_json::to_string_pretty(&config);
             match result {
                 Err(ref e) => println!("Error: {:#?}", e),
