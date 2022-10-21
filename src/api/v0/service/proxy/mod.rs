@@ -162,11 +162,11 @@ pub struct Proxy {
     id: u64,
     tenant_id: u64,
     service_id: u64,
-    #[serde(deserialize_with = "parse_url", serialize_with = "serialize_url")]
-    endpoint: url::Url,
+    #[serde(deserialize_with = "parse_url_opt", skip_serializing)]
+    endpoint: Option<url::Url>,
     deployed_at: Option<String>,
-    #[serde(deserialize_with = "parse_url", serialize_with = "serialize_url")]
-    api_backend: url::Url,
+    #[serde(deserialize_with = "parse_url_opt", skip_serializing)]
+    api_backend: Option<url::Url>,
     auth_app_key: String,
     auth_app_id: String,
     auth_user_key: String,
@@ -224,7 +224,7 @@ impl Proxy {
         self.service_id
     }
 
-    pub fn endpoint(&self) -> &url::Url {
+    pub fn endpoint(&self) -> &Option<url::Url> {
         &self.endpoint
     }
 
@@ -232,7 +232,7 @@ impl Proxy {
         self.endpoint_port
     }
 
-    pub fn api_backend(&self) -> &url::Url {
+    pub fn api_backend(&self) -> &Option<url::Url> {
         &self.api_backend
     }
 
