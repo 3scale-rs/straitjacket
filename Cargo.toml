@@ -13,7 +13,7 @@ client = ["reqwest"]
 [dependencies]
 serde = { version = "^1", features = ["derive"] }
 serde_json = "^1"
-straitjacket_macro = { git = "https://github.com/3scale-rs/straitjacket_macro", branch = "master" }
+straitjacket_macro = { git = "https://github.com/3scale-rs/straitjacket_macro", tag = "v0.2.0" }
 url = { version = "^2.4", features = ["serde"] }
 http = "^0.2"
 reqwest = { version = "*", optional = true, features = ["blocking", "json"] }
